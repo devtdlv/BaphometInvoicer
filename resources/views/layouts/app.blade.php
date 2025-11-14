@@ -10,16 +10,16 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
-            --text-primary: #e5e5e5;
-            --text-secondary: #a3a3a3;
-            --accent: #8b5cf6;
-            --accent-hover: #7c3aed;
-            --border: #262626;
+            --bg-primary: #f5f7fb;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f3f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent: #5b21b6;
+            --accent-hover: #4c1d95;
+            --border: #e2e8f0;
             --success: #10b981;
-            --danger: #ef4444;
+            --danger: #dc2626;
             --warning: #f59e0b;
         }
         
@@ -91,6 +91,7 @@
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
         }
         
         .table {
@@ -199,10 +200,27 @@
                     {{ config('app.name') }}
                 </a>
                 @auth
+                @php
+                    $navLink = function ($routePatterns) {
+                        $patterns = (array) $routePatterns;
+                        $isActive = false;
+                        foreach ($patterns as $pattern) {
+                            if (request()->routeIs($pattern)) {
+                                $isActive = true;
+                                break;
+                            }
+                        }
+                        $color = $isActive ? 'var(--accent)' : 'var(--text-secondary)';
+                        $border = $isActive ? '2px solid var(--accent)' : '2px solid transparent';
+                        return "color: {$color}; text-decoration: none; font-weight: 500; padding-bottom: 0.25rem; border-bottom: {$border}; transition: color 0.2s, border-color 0.2s;";
+                    };
+                @endphp
                 <div style="display: flex; gap: 1.5rem;">
-                    <a href="{{ route('invoices.index') }}" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Invoices</a>
-                    <a href="{{ route('quotes.index') }}" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Quotes</a>
-                    <a href="{{ route('clients.index') }}" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Clients</a>
+                    <a href="{{ route('dashboard') }}" style="{{ $navLink('dashboard') }}">Dashboard</a>
+                    <a href="{{ route('invoices.index') }}" style="{{ $navLink(['invoices.*']) }}">Invoices</a>
+                    <a href="{{ route('quotes.index') }}" style="{{ $navLink(['quotes.*']) }}">Quotes</a>
+                    <a href="{{ route('clients.index') }}" style="{{ $navLink(['clients.*']) }}">Clients</a>
+                    <a href="{{ route('reports.index') }}" style="{{ $navLink(['reports.*']) }}">Reports</a>
                 </div>
                 @endauth
             </div>

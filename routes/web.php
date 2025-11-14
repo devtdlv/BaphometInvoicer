@@ -2,20 +2,20 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientPortalController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuoteController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('invoices.index');
+    return redirect()->route('dashboard');
 })->middleware('auth');
 
 Route::middleware('auth')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return redirect()->route('invoices.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Invoices
     Route::resource('invoices', InvoiceController::class);
@@ -37,6 +37,17 @@ Route::middleware('auth')->group(function () {
     Route::get('payments/{gateway}/callback', [PaymentController::class, 'callback'])->name('payments.callback');
     Route::get('payments/{invoice}/success', [PaymentController::class, 'success'])->name('payments.success');
     Route::get('payments/{invoice}/cancel', [PaymentController::class, 'cancel'])->name('payments.cancel');
+
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('revenue', [ReportController::class, 'revenue'])->name('revenue');
+        Route::get('client', [ReportController::class, 'client'])->name('client');
+        Route::get('export', [ReportController::class, 'export'])->name('export');
+    });
+
+    // Bulk Actions
+    Route::post('invoices/bulk', [InvoiceController::class, 'bulkAction'])->name('invoices.bulk');
 });
 
 // Client Portal

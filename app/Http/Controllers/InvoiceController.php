@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceSent;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
@@ -15,14 +17,50 @@ class InvoiceController extends Controller
         protected InvoiceService $invoiceService
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::with('client')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(20);
+        $query = Invoice::with('client')
+            ->where('user_id', auth()->id());
 
-        return view('invoices.index', compact('invoices'));
+        // Search by invoice number or client name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('client', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date range
+        if ($request->filled('date_from')) {
+            $query->where('issue_date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('issue_date', '<=', $request->date_to);
+        }
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = $request->get('sort_dir', 'desc');
+        $query->orderBy($sortBy, $sortDir);
+
+        $invoices = $query->paginate(20)->withQueryString();
+        $clients = Client::where('user_id', auth()->id())->get();
+
+        return view('invoices.index', compact('invoices', 'clients'));
     }
 
     public function create()
@@ -111,7 +149,13 @@ class InvoiceController extends Controller
         
         $invoice->update(['status' => 'sent']);
         
-        // TODO: Send email notification
+        // Send email notification
+        try {
+            Mail::to($invoice->client->email)->send(new InvoiceSent($invoice));
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Log::error('Failed to send invoice email: ' . $e->getMessage());
+        }
         
         return redirect()->back()->with('success', 'Invoice sent successfully.');
     }
@@ -121,6 +165,44 @@ class InvoiceController extends Controller
         $this->authorize('view', $invoice);
         
         return $this->invoiceService->generatePdf($invoice);
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:delete,mark_sent,mark_paid',
+            'invoice_ids' => 'required|string',
+        ]);
+
+        $invoiceIds = json_decode($request->invoice_ids, true);
+        
+        if (!is_array($invoiceIds)) {
+            return redirect()->back()->with('error', 'Invalid invoice selection.');
+        }
+
+        $invoices = Invoice::whereIn('id', $invoiceIds)
+            ->where('user_id', auth()->id())
+            ->get();
+
+        $count = 0;
+        foreach ($invoices as $invoice) {
+            $this->authorize('update', $invoice);
+            
+            match($request->action) {
+                'delete' => $invoice->delete(),
+                'mark_sent' => $invoice->update(['status' => 'sent']),
+                'mark_paid' => $invoice->update(['status' => 'paid', 'paid_at' => now()]),
+            };
+            $count++;
+        }
+
+        $message = match($request->action) {
+            'delete' => "{$count} invoice(s) deleted successfully.",
+            'mark_sent' => "{$count} invoice(s) marked as sent.",
+            'mark_paid' => "{$count} invoice(s) marked as paid.",
+        };
+
+        return redirect()->back()->with('success', $message);
     }
 }
 

@@ -28,19 +28,16 @@ class Quote extends Model
         'converted_to_invoice_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'issue_date' => 'date',
-            'expiry_date' => 'date',
-            'subtotal' => 'decimal:2',
-            'tax_rate' => 'decimal:2',
-            'tax_amount' => 'decimal:2',
-            'discount_value' => 'decimal:2',
-            'discount_amount' => 'decimal:2',
-            'total' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'issue_date' => 'date',
+        'expiry_date' => 'date',
+        'subtotal' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'discount_value' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'total' => 'decimal:2',
+    ];
 
     public function user()
     {

@@ -4,6 +4,7 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
 
 ## Features
 
+### Core Features
 - ✅ **Create & Send Invoices** - Generate professional invoices with customizable items
 - ✅ **PDF Generation** - Export invoices and quotes as PDFs using DomPDF
 - ✅ **Payment Integration** - Stripe and PayPal payment processing
@@ -12,6 +13,16 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
 - ✅ **Invoice Status Tracking** - Track invoices from draft to paid
 - ✅ **Quote Management** - Create quotes and convert them to invoices
 - ✅ **Dark Theme UI** - Elegant, professional dark interface
+
+### Advanced Features
+- 📊 **Analytics Dashboard** - Revenue statistics, charts, and key metrics
+- 🔍 **Advanced Search & Filtering** - Search by invoice number, client, filter by status, date range, and more
+- 📧 **Email Notifications** - Automatically email invoices and quotes to clients
+- 📈 **Financial Reports** - Revenue reports, client reports, and data exports (CSV)
+- ⚡ **Bulk Actions** - Select multiple invoices for batch operations (mark as sent/paid, delete)
+- 🔄 **Recurring Invoices** - Set up automated recurring billing (models ready)
+- ⏰ **Automated Overdue Tracking** - Automatic status updates for overdue invoices
+- 📋 **Export Functionality** - Export invoice data to CSV for accounting software
 
 ## Requirements
 
@@ -62,17 +73,31 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
    php artisan migrate
    ```
 
-7. **Build assets (for development)**
+7. **Seed the database (optional - creates test accounts and sample data)**
+   ```bash
+   php artisan db:seed
+   ```
+   
+   This creates:
+   - **Admin account**: `admin@example.com` / `password`
+   - **Client account**: `client@example.com` / `password`
+   - Sample client, invoices, and quotes for testing
+
+8. **Build assets (for development)**
    ```bash
    npm run dev
    ```
 
-8. **Start the development server**
+9. **Start the development server**
    ```bash
    php artisan serve
    ```
 
    Visit `http://localhost:8000` in your browser.
+
+   **Login with test account:**
+   - Email: `admin@example.com`
+   - Password: `password`
 
 ## Configuration
 

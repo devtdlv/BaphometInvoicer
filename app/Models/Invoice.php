@@ -32,20 +32,17 @@ class Invoice extends Model
         'payment_reference',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'issue_date' => 'date',
-            'due_date' => 'date',
-            'paid_at' => 'datetime',
-            'subtotal' => 'decimal:2',
-            'tax_rate' => 'decimal:2',
-            'tax_amount' => 'decimal:2',
-            'discount_value' => 'decimal:2',
-            'discount_amount' => 'decimal:2',
-            'total' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'issue_date' => 'date',
+        'due_date' => 'date',
+        'paid_at' => 'datetime',
+        'subtotal' => 'decimal:2',
+        'tax_rate' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
+        'discount_value' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'total' => 'decimal:2',
+    ];
 
     public function user(): BelongsTo
     {
