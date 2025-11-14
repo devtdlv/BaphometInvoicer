@@ -8,7 +8,7 @@
     <a href="{{ route('invoices.index') }}" class="btn btn-secondary">Back</a>
 </div>
 
-<form method="POST" action="{{ route('invoices.store') }}">
+<form method="POST" action="{{ route('invoices.store') }}" enctype="multipart/form-data">
     @csrf
     
     <div class="card">
@@ -39,6 +39,24 @@
                 <label class="form-label">Tax Rate (%)</label>
                 <input type="number" name="tax_rate" class="form-input" value="{{ old('tax_rate', 0) }}" step="0.01" min="0" max="100">
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Currency</label>
+                <select name="currency_code" class="form-input" id="currency_select" required>
+                    @foreach($currencies as $currency)
+                        <option value="{{ $currency['code'] }}" data-symbol="{{ $currency['symbol'] }}" {{ old('currency_code', 'USD') === $currency['code'] ? 'selected' : '' }}>
+                            {{ $currency['label'] }}
+                        </option>
+                    @endforeach
+                </select>
+                <input type="hidden" name="currency_symbol" id="currency_symbol" value="{{ old('currency_symbol', $currencies[0]['symbol'] ?? '$') }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Exchange Rate</label>
+                <input type="number" name="currency_rate" class="form-input" value="{{ old('currency_rate', 1) }}" step="0.000001" min="0.000001">
+                <small style="color: var(--text-secondary);">Relative to your base currency (default 1)</small>
+            </div>
         </div>
         
         <div class="form-group">
@@ -63,6 +81,21 @@
         <div class="form-group">
             <label class="form-label">Terms</label>
             <textarea name="terms" class="form-input" rows="3">{{ old('terms') }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">PDF Template</label>
+            <select name="pdf_template" class="form-input">
+                @foreach($pdfTemplates as $key => $label)
+                    <option value="{{ $key }}" {{ old('pdf_template', 'classic') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Attachments</label>
+            <input type="file" name="attachments[]" class="form-input" multiple>
+            <small style="color: var(--text-secondary);">Upload reference files (PDF, images, up to 5MB each)</small>
         </div>
     </div>
     
@@ -145,6 +178,17 @@ document.getElementById('discount_type').addEventListener('change', function() {
         valueGroup.style.display = 'none';
     }
 });
+
+const currencySelect = document.getElementById('currency_select');
+const currencySymbolInput = document.getElementById('currency_symbol');
+if (currencySelect && currencySymbolInput) {
+    const updateSymbol = () => {
+        const option = currencySelect.options[currencySelect.selectedIndex];
+        currencySymbolInput.value = option.getAttribute('data-symbol') || '$';
+    };
+    updateSymbol();
+    currencySelect.addEventListener('change', updateSymbol);
+}
 </script>
 @endsection
 

@@ -23,6 +23,10 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
 - 🔄 **Recurring Invoices** - Set up automated recurring billing (models ready)
 - ⏰ **Automated Overdue Tracking** - Automatic status updates for overdue invoices
 - 📋 **Export Functionality** - Export invoice data to CSV for accounting software
+- 💱 **Multi-Currency Support** - Configure currency, symbols, and exchange rates per invoice or quote
+- 🖨️ **Multiple PDF Templates** - Switch between classic and modern layouts
+- 📎 **Invoice Attachments** - Upload and share supporting documents for each invoice
+- 🔔 **Payment Reminders** - Automated reminder emails before and after due dates
 
 ## Requirements
 

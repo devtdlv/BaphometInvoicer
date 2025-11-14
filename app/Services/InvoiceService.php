@@ -22,6 +22,10 @@ class InvoiceService
             'discount_value' => $data['discount_value'] ?? null,
             'notes' => $data['notes'] ?? null,
             'terms' => $data['terms'] ?? null,
+            'currency_code' => $data['currency_code'] ?? 'USD',
+            'currency_symbol' => $data['currency_symbol'] ?? '$',
+            'currency_rate' => $data['currency_rate'] ?? 1,
+            'pdf_template' => $data['pdf_template'] ?? 'classic',
         ]);
 
         foreach ($data['items'] as $itemData) {
@@ -52,6 +56,10 @@ class InvoiceService
             'discount_value' => $data['discount_value'] ?? null,
             'notes' => $data['notes'] ?? null,
             'terms' => $data['terms'] ?? null,
+            'currency_code' => $data['currency_code'] ?? $invoice->currency_code,
+            'currency_symbol' => $data['currency_symbol'] ?? $invoice->currency_symbol,
+            'currency_rate' => $data['currency_rate'] ?? $invoice->currency_rate,
+            'pdf_template' => $data['pdf_template'] ?? $invoice->pdf_template,
         ]);
 
         $invoice->items()->delete();
@@ -75,7 +83,8 @@ class InvoiceService
     {
         $invoice->load(['client', 'items', 'user']);
         
-        $pdf = Pdf::loadView('pdf.invoice', compact('invoice'));
+        $view = $this->resolveTemplateView($invoice->pdf_template);
+        $pdf = Pdf::loadView($view, compact('invoice'));
         
         return $pdf->download("invoice-{$invoice->invoice_number}.pdf");
     }
@@ -98,6 +107,14 @@ class InvoiceService
         }
         
         return sprintf('%s%s%s-%04d', $prefix, $year, $month, $nextNumber);
+    }
+
+    protected function resolveTemplateView(string $template): string
+    {
+        return match ($template) {
+            'modern' => 'pdf.templates.invoice_modern',
+            default => 'pdf.invoice',
+        };
     }
 }
 

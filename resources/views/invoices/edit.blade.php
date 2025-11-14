@@ -8,7 +8,7 @@
     <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-secondary">Back</a>
 </div>
 
-<form method="POST" action="{{ route('invoices.update', $invoice) }}">
+<form method="POST" action="{{ route('invoices.update', $invoice) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     
@@ -39,6 +39,24 @@
                 <label class="form-label">Tax Rate (%)</label>
                 <input type="number" name="tax_rate" class="form-input" value="{{ old('tax_rate', $invoice->tax_rate) }}" step="0.01" min="0" max="100">
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Currency</label>
+                <select name="currency_code" class="form-input" id="currency_select" required>
+                    @foreach($currencies as $currency)
+                        <option value="{{ $currency['code'] }}" data-symbol="{{ $currency['symbol'] }}" {{ $invoice->currency_code === $currency['code'] ? 'selected' : '' }}>
+                            {{ $currency['label'] }}
+                        </option>
+                    @endforeach
+                </select>
+                <input type="hidden" name="currency_symbol" id="currency_symbol" value="{{ $invoice->currency_symbol }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Exchange Rate</label>
+                <input type="number" name="currency_rate" class="form-input" value="{{ old('currency_rate', $invoice->currency_rate) }}" step="0.000001" min="0.000001">
+                <small style="color: var(--text-secondary);">Relative to your base currency</small>
+            </div>
         </div>
         
         <div class="form-group">
@@ -64,6 +82,37 @@
             <label class="form-label">Terms</label>
             <textarea name="terms" class="form-input" rows="3">{{ old('terms', $invoice->terms) }}</textarea>
         </div>
+
+        <div class="form-group">
+            <label class="form-label">PDF Template</label>
+            <select name="pdf_template" class="form-input">
+                @foreach($pdfTemplates as $key => $label)
+                    <option value="{{ $key }}" {{ $invoice->pdf_template === $key ? 'selected' : '' }}>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Attachments</label>
+            <input type="file" name="attachments[]" class="form-input" multiple>
+            <small style="color: var(--text-secondary);">Upload additional files (PDF, images, up to 5MB each)</small>
+        </div>
+
+        @if($invoice->attachments->count())
+            <div class="form-group">
+                <label class="form-label">Existing Attachments</label>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    @foreach($invoice->attachments as $attachment)
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="{{ route('invoices.attachments.download', [$invoice, $attachment]) }}" style="color: var(--accent); text-decoration: none;">
+                                {{ $attachment->original_name }}
+                            </a>
+                            <small style="color: var(--text-secondary);">({{ number_format($attachment->file_size / 1024, 1) }} KB)</small>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
     
     <div class="card">
@@ -147,6 +196,17 @@ document.getElementById('discount_type').addEventListener('change', function() {
         valueGroup.style.display = 'none';
     }
 });
+
+const currencySelect = document.getElementById('currency_select');
+const currencySymbolInput = document.getElementById('currency_symbol');
+if (currencySelect && currencySymbolInput) {
+    const updateSymbol = () => {
+        const option = currencySelect.options[currencySelect.selectedIndex];
+        currencySymbolInput.value = option.getAttribute('data-symbol') || currencySymbolInput.value;
+    };
+    updateSymbol();
+    currencySelect.addEventListener('change', updateSymbol);
+}
 </script>
 @endsection
 

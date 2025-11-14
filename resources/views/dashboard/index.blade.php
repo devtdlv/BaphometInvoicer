@@ -99,7 +99,12 @@
                     <p style="font-size: 0.875rem; color: var(--text-secondary);">{{ $invoice->client->name }}</p>
                 </div>
                 <div style="text-align: right;">
-                    <p style="font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">${{ number_format($invoice->total, 2) }}</p>
+                    <p style="font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">
+                        {{ $invoice->currency_symbol ?? '$' }}{{ number_format($invoice->total, 2) }}
+                        @if($invoice->currency_code)
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">{{ $invoice->currency_code }}</span>
+                        @endif
+                    </p>
                     @if($invoice->status === 'paid')
                         <span class="badge badge-success">Paid</span>
                     @elseif($invoice->status === 'sent')
@@ -171,7 +176,10 @@
                     <p style="font-size: 0.875rem; color: var(--text-secondary);">{{ $quote->client->name }}</p>
                 </div>
                 <div style="text-align: right;">
-                    <p style="font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">${{ number_format($quote->total, 2) }}</p>
+                    <p style="font-weight: 600; color: var(--accent); margin-bottom: 0.25rem;">
+                        {{ $quote->currency_symbol ?? '$' }}{{ number_format($quote->total, 2) }}
+                        <span style="font-size: 0.75rem; color: var(--text-secondary);">{{ $quote->currency_code }}</span>
+                    </p>
                     @if($quote->status === 'accepted')
                         <span class="badge badge-success">Accepted</span>
                     @elseif($quote->status === 'sent')

@@ -67,7 +67,10 @@
         </div>
         <div>
             <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Total</p>
-            <p style="font-weight: 600; font-size: 1.25rem; color: var(--accent);">${{ number_format($quote->total, 2) }}</p>
+            <p style="font-weight: 600; font-size: 1.25rem; color: var(--accent);">
+                {{ $quote->currency_symbol }}{{ number_format($quote->total, 2) }}
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">{{ $quote->currency_code }}</span>
+            </p>
         </div>
     </div>
     
@@ -85,31 +88,33 @@
                 <tr>
                     <td>{{ $item->description }}</td>
                     <td>{{ $item->quantity }}</td>
-                    <td>${{ number_format($item->price, 2) }}</td>
-                    <td>${{ number_format($item->total, 2) }}</td>
+                    <td>{{ $quote->currency_symbol }}{{ number_format($item->price, 2) }}</td>
+                    <td>{{ $quote->currency_symbol }}{{ number_format($item->total, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot style="border-top: 2px solid var(--border);">
             <tr>
                 <td colspan="3" style="text-align: right; font-weight: 600;">Subtotal:</td>
-                <td style="font-weight: 600;">${{ number_format($quote->subtotal, 2) }}</td>
+                <td style="font-weight: 600;">{{ $quote->currency_symbol }}{{ number_format($quote->subtotal, 2) }}</td>
             </tr>
             @if($quote->discount_amount > 0)
                 <tr>
                     <td colspan="3" style="text-align: right; font-weight: 600;">Discount:</td>
-                    <td style="font-weight: 600; color: var(--success);">-${{ number_format($quote->discount_amount, 2) }}</td>
+                    <td style="font-weight: 600; color: var(--success);">-{{ $quote->currency_symbol }}{{ number_format($quote->discount_amount, 2) }}</td>
                 </tr>
             @endif
             @if($quote->tax_amount > 0)
                 <tr>
                     <td colspan="3" style="text-align: right; font-weight: 600;">Tax ({{ $quote->tax_rate }}%):</td>
-                    <td style="font-weight: 600;">${{ number_format($quote->tax_amount, 2) }}</td>
+                    <td style="font-weight: 600;">{{ $quote->currency_symbol }}{{ number_format($quote->tax_amount, 2) }}</td>
                 </tr>
             @endif
             <tr>
                 <td colspan="3" style="text-align: right; font-weight: 700; font-size: 1.125rem;">Total:</td>
-                <td style="font-weight: 700; font-size: 1.125rem; color: var(--accent);">${{ number_format($quote->total, 2) }}</td>
+                <td style="font-weight: 700; font-size: 1.125rem; color: var(--accent);">
+                    {{ $quote->currency_symbol }}{{ number_format($quote->total, 2) }} {{ $quote->currency_code }}
+                </td>
             </tr>
         </tfoot>
     </table>

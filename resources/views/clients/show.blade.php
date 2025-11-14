@@ -81,7 +81,10 @@
                         <tr>
                             <td><a href="{{ route('invoices.show', $invoice) }}" style="color: var(--accent);">{{ $invoice->invoice_number }}</a></td>
                             <td>{{ $invoice->issue_date->format('M d, Y') }}</td>
-                            <td>${{ number_format($invoice->total, 2) }}</td>
+                            <td>
+                                {{ $invoice->currency_symbol }}{{ number_format($invoice->total, 2) }}
+                                <span style="color: var(--text-secondary); font-size: 0.75rem;">{{ $invoice->currency_code }}</span>
+                            </td>
                             <td>
                                 @if($invoice->status === 'paid')
                                     <span class="badge badge-success">Paid</span>
@@ -113,7 +116,10 @@
                         <tr>
                             <td><a href="{{ route('quotes.show', $quote) }}" style="color: var(--accent);">{{ $quote->quote_number }}</a></td>
                             <td>{{ $quote->issue_date->format('M d, Y') }}</td>
-                            <td>${{ number_format($quote->total, 2) }}</td>
+                            <td>
+                                {{ $quote->currency_symbol }}{{ number_format($quote->total, 2) }}
+                                <span style="color: var(--text-secondary); font-size: 0.75rem;">{{ $quote->currency_code }}</span>
+                            </td>
                             <td>
                                 @if($quote->status === 'accepted')
                                     <span class="badge badge-success">Accepted</span>

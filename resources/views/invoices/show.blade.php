@@ -62,7 +62,10 @@
         </div>
         <div>
             <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Total</p>
-            <p style="font-weight: 600; font-size: 1.25rem; color: var(--accent);">${{ number_format($invoice->total, 2) }}</p>
+            <p style="font-weight: 600; font-size: 1.25rem; color: var(--accent);">
+                {{ $invoice->currency_symbol }}{{ number_format($invoice->total, 2) }}
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">{{ $invoice->currency_code }}</span>
+            </p>
         </div>
     </div>
     
@@ -80,31 +83,33 @@
                 <tr>
                     <td>{{ $item->description }}</td>
                     <td>{{ $item->quantity }}</td>
-                    <td>${{ number_format($item->price, 2) }}</td>
-                    <td>${{ number_format($item->total, 2) }}</td>
+                    <td>{{ $invoice->currency_symbol }}{{ number_format($item->price, 2) }}</td>
+                    <td>{{ $invoice->currency_symbol }}{{ number_format($item->total, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot style="border-top: 2px solid var(--border);">
             <tr>
                 <td colspan="3" style="text-align: right; font-weight: 600;">Subtotal:</td>
-                <td style="font-weight: 600;">${{ number_format($invoice->subtotal, 2) }}</td>
+                <td style="font-weight: 600;">{{ $invoice->currency_symbol }}{{ number_format($invoice->subtotal, 2) }}</td>
             </tr>
             @if($invoice->discount_amount > 0)
                 <tr>
                     <td colspan="3" style="text-align: right; font-weight: 600;">Discount:</td>
-                    <td style="font-weight: 600; color: var(--success);">-${{ number_format($invoice->discount_amount, 2) }}</td>
+                    <td style="font-weight: 600; color: var(--success);">-{{ $invoice->currency_symbol }}{{ number_format($invoice->discount_amount, 2) }}</td>
                 </tr>
             @endif
             @if($invoice->tax_amount > 0)
                 <tr>
                     <td colspan="3" style="text-align: right; font-weight: 600;">Tax ({{ $invoice->tax_rate }}%):</td>
-                    <td style="font-weight: 600;">${{ number_format($invoice->tax_amount, 2) }}</td>
+                    <td style="font-weight: 600;">{{ $invoice->currency_symbol }}{{ number_format($invoice->tax_amount, 2) }}</td>
                 </tr>
             @endif
             <tr>
                 <td colspan="3" style="text-align: right; font-weight: 700; font-size: 1.125rem;">Total:</td>
-                <td style="font-weight: 700; font-size: 1.125rem; color: var(--accent);">${{ number_format($invoice->total, 2) }}</td>
+                <td style="font-weight: 700; font-size: 1.125rem; color: var(--accent);">
+                    {{ $invoice->currency_symbol }}{{ number_format($invoice->total, 2) }} {{ $invoice->currency_code }}
+                </td>
             </tr>
         </tfoot>
     </table>
@@ -120,6 +125,24 @@
         <div style="margin-top: 1.5rem;">
             <h3 style="margin-bottom: 0.5rem; font-weight: 600;">Terms</h3>
             <p style="color: var(--text-secondary);">{{ $invoice->terms }}</p>
+        </div>
+    @endif
+
+    @if($invoice->attachments->count())
+        <div style="margin-top: 1.5rem;">
+            <h3 style="margin-bottom: 0.5rem; font-weight: 600;">Attachments</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                @foreach($invoice->attachments as $attachment)
+                    <li style="margin-bottom: 0.5rem;">
+                        <a href="{{ route('invoices.attachments.download', [$invoice, $attachment]) }}" style="color: var(--accent); text-decoration: none;">
+                            {{ $attachment->original_name }}
+                        </a>
+                        <small style="color: var(--text-secondary);">
+                            ({{ number_format($attachment->file_size / 1024, 1) }} KB)
+                        </small>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     @endif
 </div>
@@ -140,7 +163,7 @@
                 @foreach($invoice->payments as $payment)
                     <tr>
                         <td>{{ $payment->paid_at->format('M d, Y H:i') }}</td>
-                        <td>${{ number_format($payment->amount, 2) }}</td>
+                        <td>{{ $invoice->currency_symbol }}{{ number_format($payment->amount, 2) }}</td>
                         <td>{{ ucfirst($payment->payment_method) }}</td>
                         <td>
                             @if($payment->status === 'completed')

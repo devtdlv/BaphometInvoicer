@@ -26,7 +26,10 @@ class QuoteController extends Controller
     public function create()
     {
         $clients = Client::where('user_id', auth()->id())->get();
-        return view('quotes.create', compact('clients'));
+        $currencies = $this->currencyOptions();
+        $pdfTemplates = $this->pdfTemplates();
+
+        return view('quotes.create', compact('clients', 'currencies', 'pdfTemplates'));
     }
 
     public function store(Request $request)
@@ -44,6 +47,10 @@ class QuoteController extends Controller
             'items.*.description' => 'required|string',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0',
+            'currency_code' => 'required|string|size:3',
+            'currency_symbol' => 'required|string|max:5',
+            'currency_rate' => 'nullable|numeric|min:0.000001',
+            'pdf_template' => 'required|in:' . implode(',', array_keys($this->pdfTemplates())),
         ]);
 
         $quote = $this->quoteService->createQuote($validated, auth()->id());
@@ -66,7 +73,10 @@ class QuoteController extends Controller
         
         $quote->load('items');
         $clients = Client::where('user_id', auth()->id())->get();
-        return view('quotes.edit', compact('quote', 'clients'));
+        $currencies = $this->currencyOptions();
+        $pdfTemplates = $this->pdfTemplates();
+
+        return view('quotes.edit', compact('quote', 'clients', 'currencies', 'pdfTemplates'));
     }
 
     public function update(Request $request, Quote $quote)
@@ -86,6 +96,10 @@ class QuoteController extends Controller
             'items.*.description' => 'required|string',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0',
+            'currency_code' => 'required|string|size:3',
+            'currency_symbol' => 'required|string|max:5',
+            'currency_rate' => 'nullable|numeric|min:0.000001',
+            'pdf_template' => 'required|in:' . implode(',', array_keys($this->pdfTemplates())),
         ]);
 
         $this->quoteService->updateQuote($quote, $validated);

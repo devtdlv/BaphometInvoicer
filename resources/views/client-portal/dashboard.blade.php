@@ -25,7 +25,10 @@
                     <td>{{ $invoice->invoice_number }}</td>
                     <td>{{ $invoice->issue_date->format('M d, Y') }}</td>
                     <td>{{ $invoice->due_date->format('M d, Y') }}</td>
-                    <td>${{ number_format($invoice->total, 2) }}</td>
+                    <td>
+                        <strong>{{ $invoice->currency_symbol }}{{ number_format($invoice->total, 2) }}</strong>
+                        <span style="color: var(--text-secondary); font-size: 0.8rem;">{{ $invoice->currency_code }}</span>
+                    </td>
                     <td>
                         @if($invoice->status === 'paid')
                             <span class="badge badge-success">Paid</span>

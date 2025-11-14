@@ -105,31 +105,31 @@
                 <tr>
                     <td>{{ $item->description }}</td>
                     <td class="text-right">{{ $item->quantity }}</td>
-                    <td class="text-right">${{ number_format($item->price, 2) }}</td>
-                    <td class="text-right">${{ number_format($item->total, 2) }}</td>
+                    <td class="text-right">{{ $quote->currency_symbol }}{{ number_format($item->price, 2) }}</td>
+                    <td class="text-right">{{ $quote->currency_symbol }}{{ number_format($item->total, 2) }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
                 <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
-                <td class="text-right">${{ number_format($quote->subtotal, 2) }}</td>
+                <td class="text-right">{{ $quote->currency_symbol }}{{ number_format($quote->subtotal, 2) }}</td>
             </tr>
             @if($quote->discount_amount > 0)
                 <tr>
                     <td colspan="3" class="text-right"><strong>Discount:</strong></td>
-                    <td class="text-right">-${{ number_format($quote->discount_amount, 2) }}</td>
+                    <td class="text-right">-{{ $quote->currency_symbol }}{{ number_format($quote->discount_amount, 2) }}</td>
                 </tr>
             @endif
             @if($quote->tax_amount > 0)
                 <tr>
                     <td colspan="3" class="text-right"><strong>Tax ({{ $quote->tax_rate }}%):</strong></td>
-                    <td class="text-right">${{ number_format($quote->tax_amount, 2) }}</td>
+                    <td class="text-right">{{ $quote->currency_symbol }}{{ number_format($quote->tax_amount, 2) }}</td>
                 </tr>
             @endif
             <tr class="total-row">
                 <td colspan="3" class="text-right"><strong>TOTAL:</strong></td>
-                <td class="text-right">${{ number_format($quote->total, 2) }}</td>
+                <td class="text-right">{{ $quote->currency_symbol }}{{ number_format($quote->total, 2) }} {{ $quote->currency_code }}</td>
             </tr>
         </tfoot>
     </table>

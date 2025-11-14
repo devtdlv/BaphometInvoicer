@@ -49,7 +49,7 @@
 
         <p>Dear {{ $invoice->client->name }},</p>
 
-        <p>We've issued invoice <strong>{{ $invoice->invoice_number }}</strong> for the amount of <strong>${{ number_format($invoice->total, 2) }}</strong>.</p>
+        <p>We've issued invoice <strong>{{ $invoice->invoice_number }}</strong> for the amount of <strong>{{ $invoice->currency_symbol }}{{ number_format($invoice->total, 2) }} {{ $invoice->currency_code }}</strong>.</p>
 
         <p><strong>Due Date:</strong> {{ \Carbon\Carbon::parse($invoice->due_date)->format('F d, Y') }}</p>
 

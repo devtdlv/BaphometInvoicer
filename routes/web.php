@@ -48,6 +48,8 @@ Route::middleware('auth')->group(function () {
 
     // Bulk Actions
     Route::post('invoices/bulk', [InvoiceController::class, 'bulkAction'])->name('invoices.bulk');
+    Route::get('invoices/{invoice}/attachments/{attachment}', [InvoiceController::class, 'downloadAttachment'])
+        ->name('invoices.attachments.download');
 });
 
 // Client Portal

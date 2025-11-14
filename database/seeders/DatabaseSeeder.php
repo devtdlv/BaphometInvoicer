@@ -64,6 +64,10 @@ class DatabaseSeeder extends Seeder
             'discount_type' => 'none',
             'notes' => 'Thank you for your business!',
             'terms' => 'Payment is due within 30 days. Late payments may incur a 5% fee.',
+            'currency_code' => 'USD',
+            'currency_symbol' => '$',
+            'currency_rate' => 1,
+            'pdf_template' => 'classic',
         ]);
 
         InvoiceItem::create([
@@ -111,6 +115,10 @@ class DatabaseSeeder extends Seeder
             'discount_value' => 5.00,
             'notes' => 'Payment received. Thank you!',
             'terms' => 'Payment is due within 30 days.',
+            'currency_code' => 'USD',
+            'currency_symbol' => '$',
+            'currency_rate' => 1,
+            'pdf_template' => 'modern',
         ]);
 
         InvoiceItem::create([
@@ -140,6 +148,10 @@ class DatabaseSeeder extends Seeder
             'discount_value' => 500.00,
             'notes' => 'This quote is valid for 30 days.',
             'terms' => 'Acceptance of this quote constitutes agreement to the terms and conditions.',
+            'currency_code' => 'USD',
+            'currency_symbol' => '$',
+            'currency_rate' => 1,
+            'pdf_template' => 'classic',
         ]);
 
         QuoteItem::create([

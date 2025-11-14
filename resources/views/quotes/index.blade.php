@@ -28,7 +28,10 @@
                     <td>{{ $quote->client->name }}</td>
                     <td>{{ $quote->issue_date->format('M d, Y') }}</td>
                     <td>{{ $quote->expiry_date ? $quote->expiry_date->format('M d, Y') : 'N/A' }}</td>
-                    <td>${{ number_format($quote->total, 2) }}</td>
+                    <td>
+                        <strong>{{ $quote->currency_symbol }}{{ number_format($quote->total, 2) }}</strong>
+                        <span style="color: var(--text-secondary); font-size: 0.8rem;">{{ $quote->currency_code }}</span>
+                    </td>
                     <td>
                         @if($quote->status === 'accepted')
                             <span class="badge badge-success">Accepted</span>

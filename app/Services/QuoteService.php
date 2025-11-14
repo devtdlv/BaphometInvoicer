@@ -6,7 +6,6 @@ use App\Models\Invoice;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
 
 class QuoteService
 {
@@ -24,6 +23,10 @@ class QuoteService
             'discount_value' => $data['discount_value'] ?? null,
             'notes' => $data['notes'] ?? null,
             'terms' => $data['terms'] ?? null,
+            'currency_code' => $data['currency_code'] ?? 'USD',
+            'currency_symbol' => $data['currency_symbol'] ?? '$',
+            'currency_rate' => $data['currency_rate'] ?? 1,
+            'pdf_template' => $data['pdf_template'] ?? 'classic',
         ]);
 
         foreach ($data['items'] as $itemData) {
@@ -54,6 +57,10 @@ class QuoteService
             'discount_value' => $data['discount_value'] ?? null,
             'notes' => $data['notes'] ?? null,
             'terms' => $data['terms'] ?? null,
+            'currency_code' => $data['currency_code'] ?? $quote->currency_code,
+            'currency_symbol' => $data['currency_symbol'] ?? $quote->currency_symbol,
+            'currency_rate' => $data['currency_rate'] ?? $quote->currency_rate,
+            'pdf_template' => $data['pdf_template'] ?? $quote->pdf_template,
         ]);
 
         $quote->items()->delete();
@@ -87,6 +94,10 @@ class QuoteService
             'discount_value' => $quote->discount_value,
             'notes' => $quote->notes,
             'terms' => $quote->terms,
+            'currency_code' => $quote->currency_code,
+            'currency_symbol' => $quote->currency_symbol,
+            'currency_rate' => $quote->currency_rate,
+            'pdf_template' => $quote->pdf_template,
         ]);
 
         foreach ($quote->items as $quoteItem) {
@@ -115,7 +126,7 @@ class QuoteService
     {
         $quote->load(['client', 'items', 'user']);
         
-        $pdf = Pdf::loadView('pdf.quote', compact('quote'));
+        $pdf = Pdf::loadView($this->resolveTemplate($quote->pdf_template), compact('quote'));
         
         return $pdf->download("quote-{$quote->quote_number}.pdf");
     }
@@ -158,6 +169,14 @@ class QuoteService
         }
         
         return sprintf('%s%s%s-%04d', $prefix, $year, $month, $nextNumber);
+    }
+
+    protected function resolveTemplate(string $template): string
+    {
+        return match ($template) {
+            'modern' => 'pdf.templates.quote_modern',
+            default => 'pdf.quote',
+        };
     }
 }
 

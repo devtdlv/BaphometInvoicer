@@ -23,8 +23,11 @@ class Quote extends Model
         'discount_value',
         'discount_amount',
         'total',
+        'currency_code',
+        'currency_rate',
         'notes',
         'terms',
+        'pdf_template',
         'converted_to_invoice_id',
     ];
 
@@ -37,6 +40,7 @@ class Quote extends Model
         'discount_value' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total' => 'decimal:2',
+        'currency_rate' => 'decimal:6',
     ];
 
     public function user()
@@ -62,6 +66,35 @@ class Quote extends Model
     public function isExpired(): bool
     {
         return $this->expiry_date && $this->expiry_date < now();
+    }
+
+    public function getCurrencySymbolAttribute(): string
+    {
+        // If currency_symbol column exists and has a value, use it
+        if (isset($this->attributes['currency_symbol']) && $this->attributes['currency_symbol']) {
+            return $this->attributes['currency_symbol'];
+        }
+        
+        // Otherwise derive from currency_code
+        return $this->getCurrencySymbol($this->currency_code ?? 'USD');
+    }
+
+    protected function getCurrencySymbol(string $code): string
+    {
+        $symbols = [
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'AUD' => 'A$',
+            'CAD' => 'C$',
+            'CHF' => 'CHF',
+            'CNY' => '¥',
+            'INR' => '₹',
+            'NZD' => 'NZ$',
+        ];
+
+        return $symbols[strtoupper($code)] ?? '$';
     }
 
     public function calculateTotal(): void

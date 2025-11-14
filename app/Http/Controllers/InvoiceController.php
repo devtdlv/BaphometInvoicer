@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Mail\InvoiceSent;
 use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\InvoiceAttachment;
 use App\Models\InvoiceItem;
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class InvoiceController extends Controller
 {
@@ -66,7 +67,10 @@ class InvoiceController extends Controller
     public function create()
     {
         $clients = Client::where('user_id', auth()->id())->get();
-        return view('invoices.create', compact('clients'));
+        $currencies = $this->currencyOptions();
+        $pdfTemplates = $this->pdfTemplates();
+
+        return view('invoices.create', compact('clients', 'currencies', 'pdfTemplates'));
     }
 
     public function store(Request $request)
@@ -84,9 +88,18 @@ class InvoiceController extends Controller
             'items.*.description' => 'required|string',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0',
+            'currency_code' => 'required|string|size:3',
+            'currency_symbol' => 'required|string|max:5',
+            'currency_rate' => 'nullable|numeric|min:0.000001',
+            'pdf_template' => 'required|in:' . implode(',', array_keys($this->pdfTemplates())),
+            'attachments.*' => 'file|max:5120',
         ]);
 
         $invoice = $this->invoiceService->createInvoice($validated, auth()->id());
+
+        if ($request->hasFile('attachments')) {
+            $this->storeAttachments($invoice, $request->file('attachments'));
+        }
 
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Invoice created successfully.');
@@ -96,7 +109,7 @@ class InvoiceController extends Controller
     {
         $this->authorize('view', $invoice);
         
-        $invoice->load(['client', 'items', 'payments']);
+        $invoice->load(['client', 'items', 'payments', 'attachments']);
         return view('invoices.show', compact('invoice'));
     }
 
@@ -104,9 +117,12 @@ class InvoiceController extends Controller
     {
         $this->authorize('update', $invoice);
         
-        $invoice->load('items');
+        $invoice->load(['items', 'attachments']);
         $clients = Client::where('user_id', auth()->id())->get();
-        return view('invoices.edit', compact('invoice', 'clients'));
+        $currencies = $this->currencyOptions();
+        $pdfTemplates = $this->pdfTemplates();
+
+        return view('invoices.edit', compact('invoice', 'clients', 'currencies', 'pdfTemplates'));
     }
 
     public function update(Request $request, Invoice $invoice)
@@ -126,9 +142,18 @@ class InvoiceController extends Controller
             'items.*.description' => 'required|string',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.price' => 'required|numeric|min:0',
+            'currency_code' => 'required|string|size:3',
+            'currency_symbol' => 'required|string|max:5',
+            'currency_rate' => 'nullable|numeric|min:0.000001',
+            'pdf_template' => 'required|in:' . implode(',', array_keys($this->pdfTemplates())),
+            'attachments.*' => 'file|max:5120',
         ]);
 
         $this->invoiceService->updateInvoice($invoice, $validated);
+
+        if ($request->hasFile('attachments')) {
+            $this->storeAttachments($invoice, $request->file('attachments'));
+        }
 
         return redirect()->route('invoices.show', $invoice)
             ->with('success', 'Invoice updated successfully.');
@@ -203,6 +228,35 @@ class InvoiceController extends Controller
         };
 
         return redirect()->back()->with('success', $message);
+    }
+
+    public function downloadAttachment(Invoice $invoice, InvoiceAttachment $attachment)
+    {
+        $this->authorize('view', $invoice);
+        abort_unless($attachment->invoice_id === $invoice->id, 404);
+
+        return Storage::disk($attachment->disk)->download($attachment->path, $attachment->original_name);
+    }
+
+    protected function storeAttachments(Invoice $invoice, array $files): void
+    {
+        foreach ($files as $file) {
+            if (!$file instanceof \Illuminate\Http\UploadedFile) {
+                continue;
+            }
+
+            $path = $file->store("invoice-attachments/{$invoice->id}", 'public');
+
+            InvoiceAttachment::create([
+                'invoice_id' => $invoice->id,
+                'file_name' => basename($path),
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'disk' => 'public',
+                'path' => $path,
+            ]);
+        }
     }
 }
 
