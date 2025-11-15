@@ -24,6 +24,7 @@ class Quote extends Model
         'discount_amount',
         'total',
         'currency_code',
+        'currency_symbol',
         'currency_rate',
         'notes',
         'terms',
