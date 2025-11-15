@@ -190,55 +190,127 @@
             border: 1px solid var(--danger);
             color: var(--danger);
         }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-menu-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .user-menu-button:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+        }
+        
+        .user-menu-dropdown {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.15);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+        
+        .user-menu-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .user-menu-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background 0.2s;
+            border: none;
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            cursor: pointer;
+        }
+        
+        .user-menu-item:first-child {
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        
+        .user-menu-item:last-child {
+            border-bottom-left-radius: 0.5rem;
+            border-bottom-right-radius: 0.5rem;
+        }
+        
+        .user-menu-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .user-menu-item.logout {
+            color: var(--danger);
+            border-top: 1px solid var(--border);
+        }
+        
+        .user-menu-item.logout:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .dropdown-arrow {
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid var(--text-secondary);
+            transition: transform 0.2s;
+        }
+        
+        .user-menu-button.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            background: rgba(91, 33, 182, 0.05) !important;
+            color: var(--accent) !important;
+        }
     </style>
 </head>
 <body>
-    <nav style="background: var(--bg-secondary); border-bottom: 1px solid var(--border); padding: 1rem 0;">
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 2rem;">
-                <a href="{{ route('dashboard') }}" style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); text-decoration: none;">
-                    {{ config('app.name') }}
-                </a>
-                @auth
-                @php
-                    $navLink = function ($routePatterns) {
-                        $patterns = (array) $routePatterns;
-                        $isActive = false;
-                        foreach ($patterns as $pattern) {
-                            if (request()->routeIs($pattern)) {
-                                $isActive = true;
-                                break;
-                            }
-                        }
-                        $color = $isActive ? 'var(--accent)' : 'var(--text-secondary)';
-                        $border = $isActive ? '2px solid var(--accent)' : '2px solid transparent';
-                        return "color: {$color}; text-decoration: none; font-weight: 500; padding-bottom: 0.25rem; border-bottom: {$border}; transition: color 0.2s, border-color 0.2s;";
-                    };
-                @endphp
-                <div style="display: flex; gap: 1.5rem;">
-                    <a href="{{ route('dashboard') }}" style="{{ $navLink('dashboard') }}">Dashboard</a>
-                    <a href="{{ route('invoices.index') }}" style="{{ $navLink(['invoices.*']) }}">Invoices</a>
-                    <a href="{{ route('quotes.index') }}" style="{{ $navLink(['quotes.*']) }}">Quotes</a>
-                    <a href="{{ route('clients.index') }}" style="{{ $navLink(['clients.*']) }}">Clients</a>
-                    <a href="{{ route('reports.index') }}" style="{{ $navLink(['reports.*']) }}">Reports</a>
-                    <a href="{{ route('settings.index') }}" style="{{ $navLink(['settings.*']) }}">Settings</a>
-                </div>
-                @endauth
-            </div>
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                @auth
-                    <span style="color: var(--text-secondary);">{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-secondary">Login</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary">Register</a>
-                @endauth
-            </div>
-        </div>
-    </nav>
+    <x-header />
 
     <main style="padding: 2rem 0; min-height: calc(100vh - 80px);">
         <div class="container">
@@ -259,6 +331,30 @@
             @yield('content')
         </div>
     </main>
+    
+    <script>
+        // User menu dropdown toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('userMenuButton');
+            const menuDropdown = document.getElementById('userMenuDropdown');
+            
+            if (menuButton && menuDropdown) {
+                menuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    menuButton.classList.toggle('active');
+                    menuDropdown.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
+                        menuButton.classList.remove('active');
+                        menuDropdown.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
 

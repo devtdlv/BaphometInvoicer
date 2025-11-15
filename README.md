@@ -1,6 +1,6 @@
 # Baphomet Invoicer
 
-Dark, elegant, intimidatingly professional invoicing and quotes micro-app built with Laravel. This invoicing tool gives your portfolio real-world credibility with boss-level ergonomics.
+Elegant, professional invoicing and quotes micro-app built with Laravel. This invoicing tool gives your portfolio real-world credibility with clean, modern design.
 
 ## Features
 
@@ -12,7 +12,8 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
 - ✅ **Client Portal** - Secure client access to view and pay invoices
 - ✅ **Invoice Status Tracking** - Track invoices from draft to paid
 - ✅ **Quote Management** - Create quotes and convert them to invoices
-- ✅ **Dark Theme UI** - Elegant, professional dark interface
+- ✅ **Modern UI** - Clean, professional interface with responsive design
+- ✅ **Landing Page** - Professional homepage showcasing features and tech stack
 
 ### Advanced Features
 - 📊 **Analytics Dashboard** - Revenue statistics, charts, and key metrics
@@ -100,6 +101,10 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
 
    Visit `http://localhost:8000` in your browser.
 
+   **First Visit:**
+   - You'll see the landing page with feature overview
+   - Click "Get Started" or "Login" to access the application
+
    **Login with test account:**
    - Email: `admin@example.com`
    - Password: `password`
@@ -137,7 +142,7 @@ INVOICE_DUE_DAYS=30
 
 Configure your default preferences and company information through the Settings page:
 
-1. **Navigate to Settings** - Click "Settings" in the main navigation
+1. **Navigate to Settings** - Click on your user menu (top right) and select "Settings"
 2. **Set Default Preferences:**
    - Choose your default currency (USD, EUR, GBP, etc.)
    - Select your preferred PDF template (Classic or Modern)
@@ -183,9 +188,9 @@ Clients can:
 ## Tech Stack
 
 - **Backend:** Laravel 10
-- **Frontend:** Blade Templates with custom dark theme
+- **Frontend:** Blade Templates with modern, clean design
 - **PDF Generation:** DomPDF
-- **Payments:** Stripe, PayPal
+- **Payments:** Stripe, PayPal (Stripe fully implemented)
 - **Database:** MySQL
 - **Asset Compilation:** Vite
 
@@ -202,11 +207,13 @@ BaphometInvoicer/
 │   └── migrations/          # Database migrations
 ├── resources/
 │   ├── views/               # Blade templates
+│   │   ├── components/      # Reusable components (header, etc.)
 │   │   ├── invoices/       # Invoice views
 │   │   ├── quotes/         # Quote views
 │   │   ├── clients/        # Client views
 │   │   ├── settings/       # Settings views
-│   │   └── pdf/            # PDF templates
+│   │   ├── pdf/            # PDF templates
+│   │   └── welcome.blade.php  # Landing page
 │   ├── css/                # Stylesheets
 │   └── js/                 # JavaScript
 ├── routes/
