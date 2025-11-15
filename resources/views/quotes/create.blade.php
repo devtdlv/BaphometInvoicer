@@ -44,12 +44,13 @@
                 <label class="form-label">Currency</label>
                 <select name="currency_code" class="form-input" id="currency_select" required>
                     @foreach($currencies as $currency)
-                        <option value="{{ $currency['code'] }}" data-symbol="{{ $currency['symbol'] }}" {{ old('currency_code', 'USD') === $currency['code'] ? 'selected' : '' }}>
+                        <option value="{{ $currency['code'] }}" data-symbol="{{ $currency['symbol'] }}" {{ old('currency_code', $user->default_currency_code ?? 'USD') === $currency['code'] ? 'selected' : '' }}>
                             {{ $currency['label'] }}
                         </option>
                     @endforeach
                 </select>
                 <input type="hidden" name="currency_symbol" id="currency_symbol" value="{{ old('currency_symbol', $currencies[0]['symbol'] ?? '$') }}">
+                <small style="color: var(--text-secondary);">Change default in <a href="{{ route('settings.index') }}" style="color: var(--accent);">Settings</a></small>
             </div>
 
             <div class="form-group">
@@ -86,9 +87,10 @@
             <label class="form-label">PDF Template</label>
             <select name="pdf_template" class="form-input">
                 @foreach($pdfTemplates as $key => $label)
-                    <option value="{{ $key }}" {{ old('pdf_template', 'classic') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                    <option value="{{ $key }}" {{ old('pdf_template', $user->default_pdf_template ?? 'classic') === $key ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
+            <small style="color: var(--text-secondary);">Change default in <a href="{{ route('settings.index') }}" style="color: var(--accent);">Settings</a></small>
         </div>
     </div>
     

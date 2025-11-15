@@ -27,6 +27,7 @@ Dark, elegant, intimidatingly professional invoicing and quotes micro-app built 
 - 🖨️ **Multiple PDF Templates** - Switch between classic and modern layouts
 - 📎 **Invoice Attachments** - Upload and share supporting documents for each invoice
 - 🔔 **Payment Reminders** - Automated reminder emails before and after due dates
+- ⚙️ **User Settings** - Configure default currency, PDF template, and company information
 
 ## Requirements
 
@@ -132,16 +133,39 @@ QUOTE_PREFIX=QUO-
 INVOICE_DUE_DAYS=30
 ```
 
+### User Settings
+
+Configure your default preferences and company information through the Settings page:
+
+1. **Navigate to Settings** - Click "Settings" in the main navigation
+2. **Set Default Preferences:**
+   - Choose your default currency (USD, EUR, GBP, etc.)
+   - Select your preferred PDF template (Classic or Modern)
+3. **Add Company Information:**
+   - Company name, address, phone, email, website
+   - Tax ID/VAT number
+   - This information will appear as "From" details on all invoices and quotes
+
+Your default currency and PDF template will be automatically selected when creating new invoices or quotes, but you can still override them per document.
+
 ## Usage
+
+### Setting Up Your Account
+
+1. **Configure Settings** - Go to Settings and set your:
+   - Default currency (e.g., USD, EUR, GBP)
+   - Default PDF template (Classic or Modern)
+   - Company information (name, address, contact details, tax ID)
+2. **Add Clients** - Navigate to Clients and add your clients
 
 ### Creating Your First Invoice
 
-1. **Register/Login** - Create an account or log in
-2. **Add a Client** - Navigate to Clients and add your first client
-3. **Create Invoice** - Go to Invoices → Create Invoice
-4. **Add Items** - Add line items with descriptions, quantities, and prices
-5. **Configure Tax & Discounts** - Set tax rates and apply discounts if needed
-6. **Send Invoice** - Send to client or download as PDF
+1. **Create Invoice** - Go to Invoices → Create Invoice
+2. **Select Client** - Choose from your client list
+3. **Add Items** - Add line items with descriptions, quantities, and prices
+4. **Configure Currency & Template** - Override defaults if needed (or use your saved defaults)
+5. **Set Tax & Discounts** - Configure tax rates and apply discounts if needed
+6. **Send Invoice** - Send to client via email or download as PDF
 
 ### Converting Quotes to Invoices
 
@@ -181,6 +205,7 @@ BaphometInvoicer/
 │   │   ├── invoices/       # Invoice views
 │   │   ├── quotes/         # Quote views
 │   │   ├── clients/        # Client views
+│   │   ├── settings/       # Settings views
 │   │   └── pdf/            # PDF templates
 │   ├── css/                # Stylesheets
 │   └── js/                 # JavaScript

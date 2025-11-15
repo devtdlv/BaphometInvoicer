@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,6 +46,10 @@ Route::middleware('auth')->group(function () {
         Route::get('client', [ReportController::class, 'client'])->name('client');
         Route::get('export', [ReportController::class, 'export'])->name('export');
     });
+
+    // Settings
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
 
     // Bulk Actions
     Route::post('invoices/bulk', [InvoiceController::class, 'bulkAction'])->name('invoices.bulk');

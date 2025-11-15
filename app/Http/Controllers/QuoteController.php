@@ -28,8 +28,9 @@ class QuoteController extends Controller
         $clients = Client::where('user_id', auth()->id())->get();
         $currencies = $this->currencyOptions();
         $pdfTemplates = $this->pdfTemplates();
+        $user = auth()->user();
 
-        return view('quotes.create', compact('clients', 'currencies', 'pdfTemplates'));
+        return view('quotes.create', compact('clients', 'currencies', 'pdfTemplates', 'user'));
     }
 
     public function store(Request $request)

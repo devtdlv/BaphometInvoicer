@@ -16,6 +16,14 @@ class User extends Authenticatable
         'email',
         'password',
         'is_client',
+        'default_currency_code',
+        'default_pdf_template',
+        'company_name',
+        'company_address',
+        'company_phone',
+        'company_email',
+        'company_website',
+        'company_tax_id',
     ];
 
     protected $hidden = [

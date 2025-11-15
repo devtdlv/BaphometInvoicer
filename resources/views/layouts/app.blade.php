@@ -221,6 +221,7 @@
                     <a href="{{ route('quotes.index') }}" style="{{ $navLink(['quotes.*']) }}">Quotes</a>
                     <a href="{{ route('clients.index') }}" style="{{ $navLink(['clients.*']) }}">Clients</a>
                     <a href="{{ route('reports.index') }}" style="{{ $navLink(['reports.*']) }}">Reports</a>
+                    <a href="{{ route('settings.index') }}" style="{{ $navLink(['settings.*']) }}">Settings</a>
                 </div>
                 @endauth
             </div>
